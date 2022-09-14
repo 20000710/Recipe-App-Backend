@@ -17,7 +17,7 @@ app.use(
 app.use(express.static('public'));
 
 // router here
-// app.use(require('./src/routes'));
+app.use(require('./src/routes/auth.route'));
 
 app.get('/', (req, res) => {
   res.json(`Food Recipe Api v1.0`);
@@ -25,7 +25,7 @@ app.get('/', (req, res) => {
 
 app.all('*', (req, res) => {
   failed(res, {
-    code: 404,
+    code: 503,
     status: 'error',
     message: `Service unavailable`,
     error: [],
