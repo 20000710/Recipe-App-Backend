@@ -127,7 +127,7 @@ const authController = {
       failed(res, {
         code: 500,
         status: 'error',
-        message: error,
+        message: error.message,
         error: [],
       });
     }
