@@ -1,4 +1,4 @@
-const { failed } = require('../helper/response');
+const { failed } = require('../helpers/response');
 
 module.exports = {
   isCreator: (req, res, next) => {

@@ -18,6 +18,8 @@ app.use(express.static('public'));
 
 // router here
 app.use(require('./src/routes/auth.route'));
+app.use(require('./src/routes/users.route'));
+app.use(require('./src/routes/recipe.route'));
 
 app.get('/', (req, res) => {
   res.json(`Food Recipe Api v1.0`);

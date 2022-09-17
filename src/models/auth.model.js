@@ -21,8 +21,7 @@ const authModel = {
          '${photo}',${level},'${verifyToken}',${isVerified},${isActive})`,
         (err, res) => {
           if (err) {
-            // reject(err);
-            console.log(err);
+            reject(err);
           }
           resolve(res);
         },
