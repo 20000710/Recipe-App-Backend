@@ -31,6 +31,18 @@ const select = (id) => {
     }); 
 };
 
+const latest = () => {
+    return new Promise ((resolve, reject) => {
+        db.query(`SELECT * from recipe ORDER BY created_at DESC LIMIT 6 OFFSET 0`, (err, res) => {
+            if(err) {
+                reject(err);
+            }else{
+                resolve(res);
+            }
+        });
+    });
+};
+
 const insert = (data) => {
     const {id, title, ingredients, is_active, user_id, created_at, liked, saved, popularity} = data
     return new Promise ((resolve, reject) =>
@@ -89,6 +101,7 @@ const countRecipe = () => {
 module.exports = {
     selectAll,
     select,
+    latest,
     insert,
     update,
     deleteRecipe,

@@ -1,4 +1,4 @@
-const {selectAll, select, insert, update, deleteRecipe, countRecipe} = require ('../models/recipe.model');
+const {selectAll, select, latest, insert, update, deleteRecipe, countRecipe} = require ('../models/recipe.model');
 const {success, failed} = require('../helpers/response');
 const { v4: uuidv4 } = require('uuid');
 
@@ -106,8 +106,10 @@ const recipeController = {
     },
     insertRecipe: async (req, res) => {
       try {
-        const {title, ingredients, user_id, created_at, liked, saved, popularity} = req.body;
+        const {title, ingredients, user_id, liked, saved, popularity} = req.body;
         const id = uuidv4();
+        const date = new Date();
+        const created_at = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
         const is_active = false;
         const data = {
           id,
@@ -136,10 +138,40 @@ const recipeController = {
         });
       }
     },
+    latestRecipe: async (req, res) => {
+      try {
+        const {created_at} = req.body;
+        const result = await latest(created_at);
+        if(result.rowCount > 0) {
+          success(res, {
+            code: 200,
+            status: 'success',
+            message: 'Success get latest recipe',
+            data: result.rows,
+          });
+        }else{
+          failed(res, {
+            code: 404,
+            status: 'error',
+            message: `latest recipe is not found`,
+            error: [],
+          });
+        }
+      }catch(error) {
+        failed(res, {
+          code: 500,
+          status: 'error',
+          message: error.message,
+          error: [],
+        });
+      }
+    },
     updateRecipe: async (req, res) => {
       try {
         const { id } = req.params;
-        const {title, ingredients, user_id, created_at, liked, saved, popularity} = req.body;
+        const {title, ingredients, user_id, liked, saved, popularity} = req.body;
+        const date = new Date();
+        const created_at = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()+1}`;
         const is_active = false;
         const recipeCheck = await select(id);
         if (recipeCheck.rowCount > 0) {
