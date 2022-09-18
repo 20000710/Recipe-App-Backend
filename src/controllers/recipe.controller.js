@@ -1,6 +1,7 @@
 const {selectAll, select, latest, insert, update, deleteRecipe, countRecipe} = require ('../models/recipe.model');
 const {success, failed} = require('../helpers/response');
 const { v4: uuidv4 } = require('uuid');
+const upload = require('../middlewares/upload');
 
 const recipeController = {
     getAllRecipe: async (req, res) => {
@@ -106,11 +107,12 @@ const recipeController = {
     },
     insertRecipe: async (req, res) => {
       try {
-        const {title, ingredients, user_id, liked, saved, popularity} = req.body;
+        const {title, ingredients, user_id, liked, saved, popularity, video} = req.body;
         const id = uuidv4();
         const date = new Date();
-        const created_at = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
-        const is_active = false;
+        const created_at = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()+1}`;
+        const is_active = true;
+        const photo = req.file.originalname;
         const data = {
           id,
           title, 
@@ -120,7 +122,9 @@ const recipeController = {
           liked, 
           saved, 
           popularity,
-          is_active
+          is_active,
+          video,
+          photo,
         };
         await insert(data);
         success(res, {
@@ -169,10 +173,11 @@ const recipeController = {
     updateRecipe: async (req, res) => {
       try {
         const { id } = req.params;
-        const {title, ingredients, user_id, liked, saved, popularity} = req.body;
+        const {title, ingredients, user_id, liked, saved, popularity, video} = req.body;
         const date = new Date();
-        const created_at = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()+1}`;
-        const is_active = false;
+        const created_at = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
+        const is_active = true;
+        const photo = req.file.originalname;
         const recipeCheck = await select(id);
         if (recipeCheck.rowCount > 0) {
           const data = {
@@ -184,15 +189,17 @@ const recipeController = {
             created_at, 
             liked, 
             saved, 
-            popularity
+            popularity,
+            video,
+            photo,
           };
           await update(data);
-          const newData = await select(id);
+          // const newData = await select(id);
           success(res, {
             code: 200,
             status: 'success',
             message: 'Success update recipe',
-            data: newData.rows[0],
+            data: data,
           });
         } else {
           failed(res, {
