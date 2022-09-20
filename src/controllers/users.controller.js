@@ -23,17 +23,19 @@ const userController = {
           sortQuery,
           modeQuery,
         );
+        const dataPerPage =
+          limitValue > result.rowCount ? result.rowCount : limitValue;
         if (search) {
           if (result.rowCount > 0) {
             const pagination = {
               currentPage: pageValue,
-              dataPerPage: limitValue,
+              dataPerPage: dataPerPage,
               totalPage: Math.ceil(result.rowCount / limitValue),
             };
             success(res, {
               code: 200,
               status: 'success',
-              message: 'Success get all product',
+              message: 'Success get all users',
               data: result.rows,
               pagination,
             });
@@ -41,14 +43,14 @@ const userController = {
             failed(res, {
               code: 500,
               status: 'error',
-              message: `product with keyword ${search} not found`,
+              message: `users with keyword ${search} not found`,
               error: [],
             });
           }
         } else {
           const pagination = {
             currentPage: pageValue,
-            dataPerPage: limitValue,
+            dataPerPage: dataPerPage,
             totalPage: Math.ceil(totalData / limitValue),
           };
 

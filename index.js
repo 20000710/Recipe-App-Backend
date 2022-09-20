@@ -19,6 +19,9 @@ app.use(express.static('public'));
 // router here
 app.use(require('./src/routes/auth.route'));
 app.use(require('./src/routes/users.route'));
+app.use(require('./src/routes/comment.route'));
+app.use(require('./src/routes/liked.route'));
+app.use(require('./src/routes/saved.route'));
 app.use(require('./src/routes/recipe.route'));
 
 app.get('/', (req, res) => {
