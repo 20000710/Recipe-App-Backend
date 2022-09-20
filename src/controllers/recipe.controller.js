@@ -112,7 +112,7 @@ const recipeController = {
         const date = new Date();
         const created_at = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()+1}`;
         const is_active = true;
-        const photo = req.file.originalname;
+        const photo = req.file.filename;
         const data = {
           id,
           title, 
