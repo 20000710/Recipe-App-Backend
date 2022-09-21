@@ -44,9 +44,9 @@ const latest = () => {
 };
 
 const insert = (data) => {
-    const {id, title, ingredients, is_active, user_id, created_at, liked, saved, popularity, video, photo} = data
+    const {id, title, ingredients, is_active, user_id, liked, saved, popularity, video, photo} = data
     return new Promise ((resolve, reject) =>
-        db.query(`INSERT INTO recipe (id, title, ingredients, is_active, user_id, created_at, liked, saved, popularity, video, photo) VALUES ('${id}', '${title}', '${ingredients}', ${is_active}, '${user_id}', '${created_at}', ${liked}, ${saved}, ${popularity}, '${video}', '${photo}')`, (error,result) => {
+        db.query(`INSERT INTO recipe (id, title, ingredients, is_active, user_id, liked, saved, popularity, video, photo) VALUES ('${id}', '${title}', '${ingredients}', ${is_active}, '${user_id}', ${liked}, ${saved}, ${popularity}, '${video}', '${photo}')`, (error,result) => {
             if(!error){
                 resolve(result)
             }else{
@@ -57,9 +57,9 @@ const insert = (data) => {
 };
 
 const update = (data) => {
-    const {id, title, ingredients, is_active, user_id, created_at, liked, saved, popularity, video, photo} = data
+    const {id, title, ingredients, is_active, user_id, liked, saved, popularity, video, photo} = data
     return new Promise((resolve, reject) => {
-        db.query(`UPDATE recipe SET title='${title}', ingredients='${ingredients}', is_active=${is_active}, user_id='${user_id}', created_at='${created_at}', liked=${liked}, saved=${saved}, popularity=${popularity}, video='${video}', photo='${photo}' WHERE id='${id}'`,
+        db.query(`UPDATE recipe SET title='${title}', ingredients='${ingredients}', is_active=${is_active}, user_id='${user_id}', liked=${liked}, saved=${saved}, popularity=${popularity}, video='${video}', photo='${photo}' WHERE id='${id}'`,
         (err, res) => {
             if (err) {
                 reject(err);
