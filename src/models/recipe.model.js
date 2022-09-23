@@ -33,7 +33,19 @@ const select = (id) => {
 
 const latest = () => {
     return new Promise ((resolve, reject) => {
-        db.query(`SELECT * from recipe ORDER BY created_at DESC LIMIT 6 OFFSET 0`, (err, res) => {
+        db.query(`SELECT * from recipe ORDER BY created_at DESC LIMIT 1 OFFSET 0`, (err, res) => {
+            if(err) {
+                reject(err);
+            }else{
+                resolve(res);
+            }
+        });
+    });
+};
+
+const popular = () => {
+    return new Promise ((resolve, reject) => {
+        db.query(`SELECT * from recipe ORDER BY popularity DESC LIMIT 6 OFFSET 0`, (err, res) => {
             if(err) {
                 reject(err);
             }else{
@@ -102,6 +114,7 @@ module.exports = {
     selectAll,
     select,
     latest,
+    popular,
     insert,
     update,
     deleteRecipe,

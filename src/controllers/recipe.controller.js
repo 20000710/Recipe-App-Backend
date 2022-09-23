@@ -1,6 +1,7 @@
-const {selectAll, select, latest, insert, update, deleteRecipe, countRecipe} = require ('../models/recipe.model');
+const {selectAll, select, latest, popular, insert, update, deleteRecipe, countRecipe} = require ('../models/recipe.model');
 const {success, failed} = require('../helpers/response');
 const { v4: uuidv4 } = require('uuid');
+const upload = require('../middlewares/upload');
 
 const recipeController = {
     getAllRecipe: async (req, res) => {
@@ -154,6 +155,34 @@ const recipeController = {
             code: 404,
             status: 'error',
             message: `latest recipe is not found`,
+            error: [],
+          });
+        }
+      }catch(error) {
+        failed(res, {
+          code: 500,
+          status: 'error',
+          message: error.message,
+          error: [],
+        });
+      }
+    },
+    popularRecipe: async (req, res) => {
+      try {
+        const {popularity} = req.body;
+        const result = await popular(popularity);
+        if(result.rowCount > 0) {
+          success(res, {
+            code: 200,
+            status: 'success',
+            message: 'Success get popular recipe',
+            data: result.rows,
+          });
+        }else{
+          failed(res, {
+            code: 404,
+            status: 'error',
+            message: `popular recipe is not found`,
             error: [],
           });
         }
