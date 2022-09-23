@@ -1,4 +1,4 @@
-const {selectAll, select, latest, insert, update, deleteRecipe, countRecipe} = require ('../models/recipe.model');
+const {selectAll, select, latest, popular, insert, update, deleteRecipe, countRecipe} = require ('../models/recipe.model');
 const {success, failed} = require('../helpers/response');
 const { v4: uuidv4 } = require('uuid');
 const upload = require('../middlewares/upload');
@@ -14,61 +14,61 @@ const recipeController = {
           const sortQuery = sort ? sort : 'title';
           const modeQuery = mode ? mode : 'ASC';
             if (typeof Number(page) == 'number' && typeof Number(limit) == 'number') {
-            const result = await selectAll({
-              searchQuery,
-              offsetValue,
-              limitValue,
-              sortQuery,
-              modeQuery,
-            });
-            const allRecipe = await countRecipe();
-            const totalData = allRecipe.rows[0].total;
-            if (search) {
-                  if (result.rowCount > 0) {
-                    const pagination = {
-                      currentPage: pageValue,
-                      dataPerPage: limitValue,
-                      totalPage: Math.ceil(result.rowCount / limitValue),
-                    };
-                    success(res, {
-                      code: 200,
-                      status: 'success',
-                      message: 'Success get all recipe',
-                      data: result.rows,
-                      pagination,
-                    });
-                  } else {
-                    failed(res, {
-                      code: 500,
-                      status: 'error',
-                      message: `recipe with keyword ${search} is not found`,
-                      error: [],
-                    });
-                  }
-                } else {
+              const result = await selectAll({
+                searchQuery,
+                offsetValue,
+                limitValue,
+                sortQuery,
+                modeQuery,
+              });
+              const allRecipe = await countRecipe();
+              const totalData = allRecipe.rows[0].total;
+              if(search) {
+                if (result.rowCount > 0) {
                   const pagination = {
                     currentPage: pageValue,
                     dataPerPage: limitValue,
-                    totalData: totalData,
-                    totalPage: Math.ceil(totalData / limitValue)
-                  }
+                    totalPage: Math.ceil(result.rowCount / limitValue),
+                  };
                   success(res, {
                     code: 200,
                     status: 'success',
-                    message: `Success get all recipe`,
+                    message: 'Success get all recipe',
                     data: result.rows,
                     pagination,
                   });
+                }else{
+                  failed(res, {
+                    code: 500,
+                    status: 'error',
+                    message: `recipe with keyword ${search} is not found`,
+                    error: [],
+                  });
                 }
-              } else {
-                failed(res, {
-                  code: 400,
-                  status: 'error',
-                  message: 'limit and page value must be number',
-                  error: [],
+              }else{
+                const pagination = {
+                  currentPage: pageValue,
+                  dataPerPage: limitValue,
+                  totalData: totalData,
+                  totalPage: Math.ceil(totalData / limitValue)
+                }
+                success(res, {
+                  code: 200,
+                  status: 'success',
+                  message: `Success get all recipe`,
+                  data: result.rows,
+                  pagination,
                 });
               }
-        } catch (error) {
+          }else{
+            failed(res, {
+              code: 400,
+              status: 'error',
+              message: 'limit and page value must be number',
+              error: [],
+            });
+          }
+        }catch(error) {
             failed(res, {
               code: 500,
               status: 'error',
@@ -109,16 +109,13 @@ const recipeController = {
       try {
         const {title, ingredients, user_id, liked, saved, popularity, video} = req.body;
         const id = uuidv4();
-        const date = new Date();
-        const created_at = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()+1}`;
         const is_active = true;
-        const photo = req.file.originalname;
+        const photo = req.file.filename;
         const data = {
           id,
           title, 
           ingredients, 
           user_id, 
-          created_at, 
           liked, 
           saved, 
           popularity,
@@ -170,14 +167,40 @@ const recipeController = {
         });
       }
     },
+    popularRecipe: async (req, res) => {
+      try {
+        const {popularity} = req.body;
+        const result = await popular(popularity);
+        if(result.rowCount > 0) {
+          success(res, {
+            code: 200,
+            status: 'success',
+            message: 'Success get popular recipe',
+            data: result.rows,
+          });
+        }else{
+          failed(res, {
+            code: 404,
+            status: 'error',
+            message: `popular recipe is not found`,
+            error: [],
+          });
+        }
+      }catch(error) {
+        failed(res, {
+          code: 500,
+          status: 'error',
+          message: error.message,
+          error: [],
+        });
+      }
+    },
     updateRecipe: async (req, res) => {
       try {
         const { id } = req.params;
         const {title, ingredients, user_id, liked, saved, popularity, video} = req.body;
-        const date = new Date();
-        const created_at = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
         const is_active = true;
-        const photo = req.file.originalname;
+        const photo = req.file.filename;
         const recipeCheck = await select(id);
         if (recipeCheck.rowCount > 0) {
           const data = {
@@ -186,7 +209,6 @@ const recipeController = {
             ingredients, 
             is_active, 
             user_id, 
-            created_at, 
             liked, 
             saved, 
             popularity,
@@ -194,7 +216,6 @@ const recipeController = {
             photo,
           };
           await update(data);
-          // const newData = await select(id);
           success(res, {
             code: 200,
             status: 'success',
