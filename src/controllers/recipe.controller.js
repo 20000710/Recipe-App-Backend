@@ -1,7 +1,7 @@
 const {selectAll, select, latest, popular, insert, update, deleteRecipe, countRecipe} = require ('../models/recipe.model');
 const {success, failed} = require('../helpers/response');
 const { v4: uuidv4 } = require('uuid');
-const upload = require('../middlewares/upload');
+// const upload = require('../middlewares/upload');
 
 const recipeController = {
     getAllRecipe: async (req, res) => {
@@ -9,15 +9,11 @@ const recipeController = {
           const { search, page, limit, sort, mode } = req.query;
           const searchQuery = search || '';
           const pageValue = page ? Number(page) : 1;
-          const limitValue = limit ? Number(limit) : 8;
-          const offsetValue = (pageValue - 1) * limitValue;
           const sortQuery = sort ? sort : 'title';
           const modeQuery = mode ? mode : 'ASC';
             if (typeof Number(page) == 'number' && typeof Number(limit) == 'number') {
               const result = await selectAll({
                 searchQuery,
-                offsetValue,
-                limitValue,
                 sortQuery,
                 modeQuery,
               });
@@ -27,8 +23,7 @@ const recipeController = {
                 if (result.rowCount > 0) {
                   const pagination = {
                     currentPage: pageValue,
-                    dataPerPage: limitValue,
-                    totalPage: Math.ceil(result.rowCount / limitValue),
+                    totalPage: Math.ceil(result.rowCount),
                   };
                   success(res, {
                     code: 200,
@@ -48,9 +43,8 @@ const recipeController = {
               }else{
                 const pagination = {
                   currentPage: pageValue,
-                  dataPerPage: limitValue,
                   totalData: totalData,
-                  totalPage: Math.ceil(totalData / limitValue)
+                  totalPage: Math.ceil(totalData)
                 }
                 success(res, {
                   code: 200,
