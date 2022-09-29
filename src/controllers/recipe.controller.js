@@ -11,7 +11,7 @@ const recipeController = {
           const pageValue = page ? Number(page) : 1;
           const sortQuery = sort ? sort : 'title';
           const modeQuery = mode ? mode : 'ASC';
-            if (typeof Number(page) == 'number' && typeof Number(limit) == 'number') {
+            if (typeof Number(page) == 'number') {
               const result = await selectAll({
                 searchQuery,
                 sortQuery,
