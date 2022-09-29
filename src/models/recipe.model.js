@@ -1,11 +1,11 @@
 const db = require('../config/db');
 
-const selectAll = ({searchQuery, offsetValue, limitValue, sortQuery, modeQuery}) => {
+const selectAll = ({searchQuery, sortQuery, modeQuery}) => {
     return new Promise ((resolve, reject) => {
         db.query(`SELECT recipe.id, recipe.title, recipe.ingredients, recipe.is_active, users.name, recipe.created_at, recipe.liked, recipe.saved, recipe.popularity, recipe.video, recipe.photo
         FROM recipe 
         INNER JOIN users 
-        ON recipe.user_id = users.id WHERE LOWER(title) LIKE '%${searchQuery}%' ORDER BY ${sortQuery} ${modeQuery} LIMIT ${limitValue} OFFSET ${offsetValue}`,
+        ON recipe.user_id = users.id WHERE LOWER(title) LIKE '%${searchQuery}%' ORDER BY ${sortQuery} ${modeQuery}`,
         (err, res) => {
             if (err) {
                 reject(err);
