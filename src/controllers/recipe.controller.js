@@ -9,11 +9,15 @@ const recipeController = {
           const { search, page, limit, sort, mode } = req.query;
           const searchQuery = search || '';
           const pageValue = page ? Number(page) : 1;
+          const limitValue = limit ? Number(limit) : 8;
+          const offsetValue = (pageValue - 1) * limitValue;
           const sortQuery = sort ? sort : 'title';
           const modeQuery = mode ? mode : 'ASC';
             if (typeof Number(page) == 'number') {
               const result = await selectAll({
                 searchQuery,
+                offsetValue,
+                limitValue,
                 sortQuery,
                 modeQuery,
               });
@@ -23,7 +27,8 @@ const recipeController = {
                 if (result.rowCount > 0) {
                   const pagination = {
                     currentPage: pageValue,
-                    totalPage: Math.ceil(result.rowCount),
+                    dataPerPage: limitValue,
+                    totalPage: Math.ceil(result.rowCount / limitValue),
                   };
                   success(res, {
                     code: 200,
@@ -43,8 +48,9 @@ const recipeController = {
               }else{
                 const pagination = {
                   currentPage: pageValue,
+                  dataPerPage: limitValue,
                   totalData: totalData,
-                  totalPage: Math.ceil(totalData)
+                  totalPage: Math.ceil(totalData / limitValue)
                 }
                 success(res, {
                   code: 200,
